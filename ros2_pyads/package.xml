@@ -9,6 +9,7 @@
 
   <depend>pyaml</depend>
   <depend>pyads</depend>
+  <depend>ros2_pyads_interfaces</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

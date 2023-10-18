@@ -124,3 +124,28 @@ which should start as false.
    
    ![bool_true](images/bool_true.png)
 
+
+## Using Services
+
+In order to call the services the ads_com_node needs to be running:
+
+```bash
+ros2 launch ros2_pyads ads_com.launch.py
+```
+
+Once the node is running, you can call the services with the following commands:
+
+* Reading a bool:
+   ```bash
+    ros2 service call /ads_com_node/read_bool ros2_pyads_interfaces/srv/ReadBool "{tag_name: 'MAIN.bTest'}"
+   ```
+* Writing a bool:
+   ```bash
+   ros2 service call /ads_com_node/write_bool ros2_pyads_interfaces/srv/WriteBool "{tag_name: 'MAIN.bTest', tag_value: true}"
+   ```
+  
+Other service will work the same way to view them just run the following command:
+
+```bash 
+ros2 service list | grep -i "ads_com_node"
+```
