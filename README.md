@@ -1,6 +1,43 @@
 # ros2_pyads
 This is a ros2 package that will be a wrapper around the pyads library to have communication between ros2 and beckhoff PLCs.
 
+# Dependencies
+Please view the [requirements.txt](requirements.txt) file for the python dependencies.
+
+pyads is the main dependency and can be installed with pip:
+
+* [pyads](https://pyads.readthedocs.io/en/latest/)
+
+This is a ros2 python package, so ROS2 Humble will also need to be installed:
+* [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
+
+
+# Installation
+
+Open a terminal and navigate to the src directory of your ros2 workspace.
+
+```bash
+cd /opt/ros2_ws/
+```
+
+Clone the repository into the src directory.
+
+```bash
+git clone https://github.com/jodle001/ros2_pyads.git src/ros2_pyads
+```
+
+Install the dependencies with pip.
+
+```bash
+pip3 install -r src/ros2_pyads/requirements.txt
+```
+
+Build the package.
+
+```bash
+colcon build --packages-select ros2_pyads
+```
+
 # Configuration
 
 ## Communications:
@@ -25,4 +62,65 @@ remote_ads: '10.100.101.14.1.1'
 ```
 
 ## Administrator Access:
+
+To have the pyads library to successfully communicate with the Beckhoff Software, it needs to have administrator access. 
+This can be done by creating a local user with admin access.
+
+**Create and fill out a yaml for PLC Admin Access**
+* Create a yaml called `plc_admin.yaml` in the config directory
+* This file is not tracked because it contains sensitive information, so it will not be pushed to the repository.
+* Fill out the yaml with the following, replacing the values with your own:
+```yaml
+plc_admin_user: 'youreadminuser'
+plc_admin_pass: 'adminpassword'
+```
+
+# Usage
+
+## Running the Bool Test
+
+This is a simple test to see if the communication is working. 
+It will read a bool from the PLC and then write the opposite value back to the PLC.
+
+1. For this to work, add a boolean variable in the MAIN program of the PLC with the name `bTest`:
+
+    ```c
+    PROGRAM MAIN
+    VAR
+        bTest : BOOL;
+    END_VAR
+    ```
+
+2. Then build the solution and run the PLC with the TwinCat software, and login to the PLC to view the variable 
+which should start as false.
+
+   You should see the following:
+
+   ![bool_false](images/bool_false.png)
+
+3. After the PLC is running, open a terminal and source the ros2 workspace, and launch the
+[ads_com_bool_test.launch.py](launch/ads_com_bool_test.launch.py) launch file.
+
+    ```bash
+    source /opt/ros2_ws/install/setup.bash
+    ros2 launch ros2_pyads ads_com_bool_test.launch.py
+    ```
+
+4. The terminal should output the following:
+
+    ```bash
+   username:~$ ros2 launch ros2_pyads ads_com_bool_test.launch.py 
+   [INFO] [launch]: All log files can be found below /home/username/.ros/log/2023-10-18-16-14-47-618657-OROC-LINUX01-3370411
+   [INFO] [launch]: Default logging verbosity is set to INFO
+   [INFO] [ads_com_bool_test_node-1]: process started with pid [3370412]
+   [ads_com_bool_test_node-1] 2023-10-18T16:14:47-0400 Info: Connected to 192.168.33.4
+   [ads_com_bool_test_node-1] 2023-10-18T16:14:47-0400 Info: connection closed by remote
+   [ads_com_bool_test_node-1] 2023-10-18T16:14:47-0400 Info: Connected to 192.168.33.4
+   [ads_com_bool_test_node-1] 2023-10-18T16:14:47-0400 Info: connection closed by remote
+   [INFO] [ads_com_bool_test_node-1]: process has finished cleanly [pid 3370412]
+    ```
+   
+   And the boolean in the Beckhoff PLC should toggle each time you run this:
+   
+   ![bool_true](images/bool_true.png)
 

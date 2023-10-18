@@ -23,7 +23,7 @@ def generate_launch_description():
         GroupAction([
             Node(
                 package='ros2_pyads',
-                executable='ads_com_node',
+                executable='ads_com_bool_test_node',
                 output='screen',
                 parameters=[
                     {'com_config': PathJoinSubstitution([package_path, LaunchConfiguration('com_config')])},

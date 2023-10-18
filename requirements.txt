@@ -1,2 +1,2 @@
-pyads==3.3.9
-PyYAML==5.4.1
+pyads~=3.3.9
+pyyaml~=5.4.1

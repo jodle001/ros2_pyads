@@ -1,14 +1,18 @@
+import pyads
 import yaml
+
 import rclpy
 from rclpy.node import Node
 from ros2_pyads.ads_com import AdsCom
-import pyads
 
 
-class ADSComNode(Node):
+class ADSComBoolTest(Node):
+    """
+    A ROS2 node that tests the ADS communication object by writing to a boolean variable in the PLC.
+    """
 
     def __init__(self):
-        super().__init__('ads_com_node',
+        super().__init__('ads_com_bool_test_node',
                          allow_undeclared_parameters=True,
                          automatically_declare_parameters_from_overrides=True)
 
@@ -34,37 +38,18 @@ class ADSComNode(Node):
         # Initialize the ADS communication object
         self.ads_com = AdsCom(com_config_data, plc_admin_data)
 
-        new_value = 10
-
-        # Example write call to the PLC
-        success = self.ads_com.write_by_name('MAIN.testVar', new_value, pyads.PLCTYPE_DWORD)
-
-        b_success = self.ads_com.write_by_name(
-            var_name='MAIN.bTestThing',
-            var_value=not self.ads_com.read_by_name('MAIN.bTestThing', pyads.PLCTYPE_BOOL),  # Toggle the existing value
+        success = self.ads_com.write_by_name(
+            var_name='MAIN.bTest',
+            var_value=not self.ads_com.read_by_name('MAIN.bTest', pyads.PLCTYPE_BOOL),  # Toggle the existing value
             var_type=pyads.PLCTYPE_BOOL)
 
         if not success:
             self.get_logger().error('Failed to write variable to PLC')
 
-        if not b_success:
-            self.get_logger().error('Failed to write variable to PLC')
-
-        # Example read call from the PLC
-        var = self.ads_com.read_by_name('MAIN.testVar', pyads.PLCTYPE_DWORD)
-
-        if var is None:
-            self.get_logger().error('Failed to read variable from PLC')
-        elif var != new_value:
-            self.get_logger().error('Read variable from PLC does not match written value')
-        else:
-            self.get_logger().info('Successfully wrote and read variable from PLC')
-
 
 def main():
     rclpy.init()
-    node = ADSComNode()
-    # rclpy.spin(node)
+    ADSComBoolTest()
     rclpy.shutdown()
 
 
