@@ -7,6 +7,9 @@
   <maintainer email="60989139+jodle001@users.noreply.github.com">jodle</maintainer>
   <license>TODO: License declaration</license>
 
+  <depend>pyaml</depend>
+  <depend>pyads</depend>
+
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

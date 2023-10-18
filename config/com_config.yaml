@@ -1,13 +1,3 @@
-# ros2_pyads
-This is a ros2 package that will be a wrapper around the pyads library to have communication between ros2 and beckhoff PLCs.
-
-# Configuration
-
-## Communications:
-
-Read the [com_config.yaml](config/com_config.yaml) file in the config directory carefully and set up the inputs, here is an example:
-
-```yaml
 # This configuration file is used to set up the pyads library objects to establish communication between
 # a machine with ROS2 and a machine running the TwinCat PLC Software.
 
@@ -22,7 +12,3 @@ route_name: 'ROS2PLC'
 host_name: '192.168.33.4'
 # This is gotten from the TwinCat System About menu "AMS Net id"
 remote_ads: '10.100.101.14.1.1'
-```
-
-## Administrator Access:
-
