@@ -2,7 +2,7 @@
 This is a ros2 package that will be a wrapper around the pyads library to have communication between ros2 and beckhoff PLCs.
 
 # Dependencies
-Please view the [requirements.txt](requirements.txt) file for the python dependencies.
+Please view the [requirements.txt](ros2_pyads/requirements.txt) file for the python dependencies.
 
 pyads is the main dependency and can be installed with pip:
 
@@ -42,7 +42,7 @@ colcon build --packages-select ros2_pyads
 
 ## Communications:
 
-Read the [com_config.yaml](config/com_config.yaml) file in the config directory carefully and set up the inputs, here is an example:
+Read the [com_config.yaml](ros2_pyads/config/com_config.yaml) file in the config directory carefully and set up the inputs, here is an example:
 
 ```yaml
 # This configuration file is used to set up the pyads library objects to establish communication between
@@ -99,7 +99,7 @@ which should start as false.
    ![bool_false](images/bool_false.png)
 
 3. After the PLC is running, open a terminal and source the ros2 workspace, and launch the
-[ads_com_bool_test.launch.py](launch/ads_com_bool_test.launch.py) launch file.
+[ads_com_bool_test.launch.py](ros2_pyads/launch/ads_com_bool_test.launch.py) launch file.
 
     ```bash
     source /opt/ros2_ws/install/setup.bash

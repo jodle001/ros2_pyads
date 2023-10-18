@@ -3,7 +3,7 @@ import pyads
 from rclpy.impl import rcutils_logger
 
 
-class AdsCom:
+class ADSCom:
 
     def __init__(self, com_config, plc_admin):
         """

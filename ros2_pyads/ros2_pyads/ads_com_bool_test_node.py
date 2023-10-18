@@ -3,10 +3,10 @@ import yaml
 
 import rclpy
 from rclpy.node import Node
-from ros2_pyads.ads_com import AdsCom
+from ros2_pyads.ads_com import ADSCom
 
 
-class ADSComBoolTest(Node):
+class ADSComBoolTestNode(Node):
     """
     A ROS2 node that tests the ADS communication object by writing to a boolean variable in the PLC.
     """
@@ -36,7 +36,7 @@ class ADSComBoolTest(Node):
             plc_admin_data = yaml.safe_load(file)
 
         # Initialize the ADS communication object
-        self.ads_com = AdsCom(com_config_data, plc_admin_data)
+        self.ads_com = ADSCom(com_config_data, plc_admin_data)
 
         success = self.ads_com.write_by_name(
             var_name='MAIN.bTest',
@@ -49,7 +49,7 @@ class ADSComBoolTest(Node):
 
 def main():
     rclpy.init()
-    ADSComBoolTest()
+    ADSComBoolTestNode()
     rclpy.shutdown()
 
 

@@ -24,7 +24,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ads_com_bool_test_node = ros2_pyads.ads_com_bool_test_node:main'
+            'ads_com_bool_test_node = ros2_pyads.ads_com_bool_test_node:main',
+            'ads_com_node = ros2_pyads.ads_com_node:main',
         ],
     },
 )
