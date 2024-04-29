@@ -4,7 +4,7 @@ import yaml
 import rclpy
 from rclpy.node import Node
 from ros2_pyads.ads_com import ADSCom
-from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString
+from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString, ReadByteArray
 
 
 class ADSComNode(Node):
@@ -46,6 +46,8 @@ class ADSComNode(Node):
         self.srv_write_bool = self.create_service(WriteBool, self.get_name() + '/write_bool', self.write_bool_callback)
         self.srv_read_string = self.create_service(ReadString, self.get_name() + '/read_string',
                                                    self.read_string_callback)
+        self.srv_read_byte_array = self.create_service(ReadByteArray, self.get_name() + '/read_byte_array',
+                                                       self.read_byte_array_callback)
 
     def ADS_connection_timer_callback(self):
         if self.ads_com.connected:
@@ -108,6 +110,18 @@ class ADSComNode(Node):
             response.msg = f"Successfully wrote {request.tag_value} to {request.tag_name}."
         except Exception as e:
             self.get_logger().error(f"Failed to write bool: {e}")
+            response.success = False
+            response.msg = str(e)
+        return response
+
+    def read_byte_array_callback(self, request, response):
+
+        try:
+            response.tag_value = self.ads_com.read_by_name(request.tag_name, pyads.PLCTYPE_BYTE * request.size)
+            response.success = True
+            response.msg = "Successfully read byte array"
+        except Exception as e:
+            self.get_logger().error(f"Failed to read byte array: {e}")
             response.success = False
             response.msg = str(e)
         return response
