@@ -44,12 +44,13 @@ class ADSComNode(Node):
         # Create Service Servers
         self.srv_read_bool = self.create_service(ReadBool, self.get_name() + '/read_bool', self.read_bool_callback)
         self.srv_write_bool = self.create_service(WriteBool, self.get_name() + '/write_bool', self.write_bool_callback)
-        self.srv_read_string = self.create_service(ReadString, self.get_name() + '/read_string', self.read_string_callback)
+        self.srv_read_string = self.create_service(ReadString, self.get_name() + '/read_string',
+                                                   self.read_string_callback)
 
     def ADS_connection_timer_callback(self):
         if self.ads_com.connected:
             return
-    
+
         try:
             self.get_logger().info("Attempting connection")
             self.ads_com.connect()
@@ -65,7 +66,9 @@ class ADSComNode(Node):
         :param response: The response object containing the read value.
         """
         try:
-            response.tag_value = bytearray(self.ads_com.read_by_name(request.tag_name, pyads.PLCTYPE_BYTE * (request.size + 1))).decode().strip("\00")
+            response.tag_value = bytearray(
+                self.ads_com.read_by_name(request.tag_name, pyads.PLCTYPE_BYTE * (request.size + 1))).decode().strip(
+                "\00")
             response.success = True
             response.msg = "Successfully read string."
         except Exception as e:

@@ -1,5 +1,6 @@
 import pyads
 
+
 class ADSCom:
 
     def __init__(self, com_config, plc_admin):
@@ -23,8 +24,6 @@ class ADSCom:
         self.plc_admin_user = self.plc_admin['plc_admin_user']
         self.plc_admin_pass = self.plc_admin['plc_admin_pass']
         self.connected = False
-
-        
 
     def connect(self):
         # Initialize the route
