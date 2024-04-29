@@ -1,5 +1,5 @@
 string tag_name
-int size
+int32 size
 ---
 string tag_value
 bool success
