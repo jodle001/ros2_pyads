@@ -27,6 +27,9 @@ class ADSCom:
         # Initialize the route
         self.initialize_route()
 
+        self.plc = pyads.Connection(self.remote_ads, pyads.PORT_TC3PLC1, self.plc_ip)
+        self.plc.open()
+
     def initialize_route(self):
         """
         Initialize the route to the PLC using the sender AMS ID, PLC IP, route name, host name, and PLC admin
@@ -52,8 +55,7 @@ class ADSCom:
 
         :return: The value of the variable
         """
-        with pyads.Connection(self.remote_ads, pyads.PORT_TC3PLC1, self.plc_ip) as plc:
-            var = plc.read_by_name(var_name, var_type)
+        var = self.plc.read_by_name(var_name, var_type)
         return var
 
     def write_by_name(self, var_name, var_value, var_type):
@@ -64,5 +66,4 @@ class ADSCom:
         :param var_value: The value of the variable to write (e.g., 5)
         :param var_type: The type of the variable to write (e.g., pyads.PLCTYPE_DWORD)
         """
-        with pyads.Connection(self.remote_ads, pyads.PORT_TC3PLC1, self.plc_ip) as plc:
-            plc.write_by_name(var_name, var_value, var_type)
+        self.plc.write_by_name(var_name, var_value, var_type)
