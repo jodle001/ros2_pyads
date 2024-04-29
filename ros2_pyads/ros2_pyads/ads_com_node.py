@@ -39,10 +39,23 @@ class ADSComNode(Node):
         # Initialize the ADS communication object
         self.ads_com = ADSCom(com_config_data, plc_admin_data)
 
+        self.ADS_connection_timer_ = self.create_timer(1, self.ADS_connection_timer_callback)
+
         # Create Service Servers
         self.srv_read_bool = self.create_service(ReadBool, self.get_name() + '/read_bool', self.read_bool_callback)
         self.srv_write_bool = self.create_service(WriteBool, self.get_name() + '/write_bool', self.write_bool_callback)
         self.srv_read_string = self.create_service(ReadString, self.get_name() + '/read_string', self.read_string_callback)
+
+    def ADS_connection_timer_callback(self):
+        if self.ads_com.connected:
+            return
+    
+        try:
+            self.get_logger().info("Attempting connection")
+            self.ads_com.connect()
+            self.get_logger().info("Connected")
+        except:
+            self.get_logger().error("Connection to ADS failed, trying again in 1 second...")
 
     def read_string_callback(self, request, response):
         """
