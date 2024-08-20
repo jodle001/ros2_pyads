@@ -11,6 +11,16 @@ def generate_launch_description():
     return LaunchDescription([
         # Declare launch arguments
         DeclareLaunchArgument(
+            name='ads_config_topic',
+            default_value='',
+            description='Topic name for ADS Configuration. If empty then yaml files will be used'),
+        DeclareLaunchArgument(
+            "robot_station",
+            default_value="",
+            choices=["", "ob00", "ob03", "ob05", "ob09"],
+            description="This is the robot station desired",
+        ),
+        DeclareLaunchArgument(
             name='com_config',
             default_value='config/com_config.yaml',
             description='Path to ADS Configuration file'),
@@ -26,6 +36,8 @@ def generate_launch_description():
                 executable='ads_com_node',
                 output='screen',
                 parameters=[
+                    {'ads_config_topic': LaunchConfiguration('ads_config_topic')},
+                    {'robot_station': LaunchConfiguration('robot_station')},
                     {'com_config': PathJoinSubstitution([package_path, LaunchConfiguration('com_config')])},
                     {'plc_admin': PathJoinSubstitution([package_path, LaunchConfiguration('plc_admin')])}
                 ],

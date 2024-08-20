@@ -4,7 +4,7 @@ import yaml
 import rclpy
 from rclpy.node import Node
 from ros2_pyads.ads_com import ADSCom
-from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString, ReadByteArray
+from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString, ReadByteArray, GetAdsComConfig
 
 
 class ADSComNode(Node):
@@ -18,26 +18,75 @@ class ADSComNode(Node):
                          automatically_declare_parameters_from_overrides=True)
 
         # Get the parameters from the launch file
+        ads_com_topic = self.get_parameter('ads_config_topic').value
+        robot_station = self.get_parameter('robot_station').value
         com_config = self.get_parameter('com_config').value
         plc_admin = self.get_parameter('plc_admin').value
 
-        if not com_config:
-            self.get_logger().fatal('Failed to get "com_config" parameter')
-            exit(2)
+        use_ros_service = False
+        if ads_com_topic and ads_com_topic != '':
+            if not robot_station or robot_station == '':
+                self.get_logger().fatal('Failed to get "robot_station" parameter')
+                exit(2)
+            use_ros_service = True
+            self.get_logger().info(f'Using ROS service: {ads_com_topic} for configuration data')
+            self.client = self.create_client(GetAdsComConfig, ads_com_topic)
 
-        if not plc_admin:
-            self.get_logger().fatal('Failed to get "plc_admin" parameter')
+            while not self.client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('Service not available, waiting again...')
 
-        # Load the config data from the YAML file
-        with open(com_config, 'r') as file:
-            com_config_data = yaml.safe_load(file)
+            request = GetAdsComConfig.Request()
+            request.station_name = robot_station
 
-        # Load the PLC admin data from the YAML file
-        with open(plc_admin, 'r') as file:
-            plc_admin_data = yaml.safe_load(file)
+            future = self.client.call_async(request)
+            rclpy.spin_until_future_complete(self, future)
 
-        # Initialize the ADS communication object
-        self.ads_com = ADSCom(com_config_data, plc_admin_data)
+            if future.result() is not None:
+                response = future.result()
+                self.get_logger().info(f'Received ADS configuration from service: {response}')
+                com_config_data = {
+                    'sender_ams': response.ads_com_config.sender_ams,
+                    'plc_ip': response.ads_com_config.plc_ip,
+                    'route_name': response.ads_com_config.route_name,
+                    'host_name': response.ads_com_config.host_name,
+                    'remote_ads': response.ads_com_config.remote_ads,
+                }
+
+                plc_admin_data = {
+                    'plc_admin_user': response.ads_com_config.plc_admin_user,
+                    'plc_admin_pass': response.ads_com_config.plc_admin_password,
+                }
+
+                # Print com config data and plc admin data:
+                self.get_logger().info(f'com_config_data: {com_config_data}')
+                self.get_logger().info(f'plc_admin_data: {plc_admin_data}')
+
+                # Initialize the ADS communication object
+                self.ads_com = ADSCom(com_config_data, plc_admin_data)
+            else:
+                self.get_logger().error('Failed to receive ADS configuration from service')
+                exit(1)
+        else:
+            self.get_logger().info('No "ads_com_topic" parameter found, using YAML files instead.')
+
+            if not com_config:
+                self.get_logger().fatal('Failed to get "com_config" parameter')
+                exit(2)
+
+            if not plc_admin:
+                self.get_logger().fatal('Failed to get "plc_admin" parameter')
+                exit(2)
+
+            # Load the config data from the YAML file
+            with open(com_config, 'r') as file:
+                com_config_data = yaml.safe_load(file)
+
+            # Load the PLC admin data from the YAML file
+            with open(plc_admin, 'r') as file:
+                plc_admin_data = yaml.safe_load(file)
+
+            # Initialize the ADS communication object
+            self.ads_com = ADSCom(com_config_data, plc_admin_data)
 
         self.ADS_connection_timer_ = self.create_timer(1, self.ADS_connection_timer_callback)
 
