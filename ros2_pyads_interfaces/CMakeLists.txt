@@ -24,6 +24,7 @@ set(srv_files
         "srv/WriteBool.srv"
         "srv/ReadString.srv"
         "srv/ReadByteArray.srv"
+        "srv/WriteInt.srv"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
