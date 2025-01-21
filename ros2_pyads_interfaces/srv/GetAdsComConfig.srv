@@ -1,0 +1,5 @@
+string station_name
+---
+ros2_pyads_interfaces/AdsComConfig ads_com_config
+bool success
+string message

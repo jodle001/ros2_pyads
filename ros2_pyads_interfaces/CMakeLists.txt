@@ -15,9 +15,11 @@ find_package(rosidl_default_generators REQUIRED)
 
 set(msg_files
 # Add message files if you have any
+  "msg/AdsComConfig.msg"
 )
 
 set(srv_files
+        "srv/GetAdsComConfig.srv"
         "srv/ReadBool.srv"
         "srv/WriteBool.srv"
         "srv/ReadString.srv"
