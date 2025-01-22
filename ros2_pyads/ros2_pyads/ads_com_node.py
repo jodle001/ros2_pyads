@@ -4,7 +4,7 @@ import yaml
 import rclpy
 from rclpy.node import Node
 from ros2_pyads.ads_com import ADSCom
-from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString, ReadByteArray, GetAdsComConfig
+from ros2_pyads_interfaces.srv import ReadBool, WriteBool, ReadString, ReadByteArray, GetAdsComConfig, WriteInt
 
 
 class ADSComNode(Node):
@@ -97,6 +97,7 @@ class ADSComNode(Node):
                                                    self.read_string_callback)
         self.srv_read_byte_array = self.create_service(ReadByteArray, self.get_name() + '/read_byte_array',
                                                        self.read_byte_array_callback)
+        self.srv_write_bool = self.create_service(WriteInt, self.get_name() + '/write_int', self.write_int_callback)
 
     def ADS_connection_timer_callback(self):
         if self.ads_com.connected:
@@ -155,6 +156,24 @@ class ADSComNode(Node):
         try:
             self.ads_com.write_by_name(request.tag_name, request.tag_value, pyads.PLCTYPE_BOOL)
             response.tag_list = request.tag_name  # assuming this is what you intended with 'tag_list'
+            response.success = True
+            response.msg = f"Successfully wrote {request.tag_value} to {request.tag_name}."
+        except Exception as e:
+            self.get_logger().error(f"Failed to write bool: {e}")
+            response.success = False
+            response.msg = str(e)
+        return response
+    
+    def write_int_callback(self, request, response):
+        """
+        Writes an int variable to the PLC.
+
+        :param request: The request object containing the tag name and value to write.
+        :param response: The response object contains the success status and message.
+        """
+        try:
+            self.ads_com.write_by_name(request.tag_name, request.tag_value, pyads.PLCTYPE_INT)
+            response.tag_list = request.tag_name
             response.success = True
             response.msg = f"Successfully wrote {request.tag_value} to {request.tag_name}."
         except Exception as e:
